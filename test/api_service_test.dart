@@ -52,7 +52,97 @@ void main() {
 
       final api = ApiService(client: mockClient);
 
-      expect(api.search('x'), throwsA(isA<Exception>()));
+      await expectLater(api.search('x'), throwsA(isA<Exception>()));
+    });
+
+    test('retries on transient 5xx and eventually succeeds', () async {
+      int calls = 0;
+      final sample = {
+        'hits': {
+          'hits': [
+            {
+              '_source': {
+                'title': 'Retry Success',
+                'channel': 'Retry Channel',
+                'meta': {'channel_id': 'retryuser'},
+                'canonical': 'https://www.bitchute.com/video/retry/'
+              }
+            }
+          ]
+        }
+      };
+      final mockClient = MockClient((request) async {
+        calls++;
+        if (calls < 3) return http.Response('Server error', 500);
+        return http.Response(jsonEncode(sample), 200);
+      });
+
+      final api = ApiService(client: mockClient);
+      final res = await api.search('x');
+      expect(res.length, 1);
+      expect(calls, 3);
+    });
+
+    test('honors configured maxAttempts', () async {
+      int calls = 0;
+      final mockClient = MockClient((request) async {
+        calls++;
+        return http.Response('Server error', 500);
+      });
+      final api = ApiService(client: mockClient, maxAttempts: 2, baseDelayMs: 1);
+      await expectLater(api.search('x'), throwsA(isA<Exception>()));
+      expect(calls, 2);
+    });
+
+    test('does not retry on 4xx', () async {
+      int calls = 0;
+      final mockClient = MockClient((request) async {
+        calls++;
+        return http.Response('Not found', 404);
+      });
+      final api = ApiService(client: mockClient);
+      await expectLater(api.search('x'), throwsA(isA<Exception>()));
+      expect(calls, 1);
+    });
+
+    test('retries on exception then succeeds', () async {
+      int calls = 0;
+      final sample = {
+        'hits': {
+          'hits': [
+            {
+              '_source': {
+                'title': 'Exception Retry',
+                'channel': 'E Channel',
+                'meta': {'channel_id': 'euser'},
+                'canonical': 'https://www.bitchute.com/video/exception/'
+              }
+            }
+          ]
+        }
+      };
+      final mockClient = MockClient((request) async {
+        calls++;
+        if (calls == 1) throw Exception('Network error');
+        return http.Response(jsonEncode(sample), 200);
+      });
+      final api = ApiService(client: mockClient);
+      final res = await api.search('x');
+      expect(res.length, 1);
+      expect(calls, 2);
+    });
+    test('uses thumbnail_url when thumbnail missing', () async {
+      final sample = {
+        'hits': {
+          'hits': [
+            { '_source': {'title':'t','channel':'a','meta':{'channel_id':'u'}, 'canonical':'u','thumbnail_url':'tn.png'} }
+          ]
+        }
+      };
+      final mock = MockClient((r) async => http.Response(jsonEncode(sample), 200));
+      final api = ApiService(client: mock);
+      final res = await api.search('x');
+      expect(res[0].thumbnail, 'tn.png');
     });
   });
 }

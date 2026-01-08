@@ -1,4 +1,4 @@
-# Bitchute Browser (Flutter)
+# Bitchute (Flutter)
 
 A small Flutter app scaffold inspired by the Ruby project in this repository — it uses the SMAT API endpoint that the Ruby script calls to search Bitchute videos and displays results.
 
@@ -31,4 +31,3 @@ flutter run
 - Add pagination, details page, and tests
 - Improve error handling and offline caching
 
-If you want, I can run a quick test of the API service or add unit tests next.

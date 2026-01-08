@@ -4,13 +4,13 @@ import 'models/video.dart';
 import 'services/api_service.dart';
 import 'widgets/video_tile.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const BitchuteApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BitchuteApp extends StatelessWidget {
+  const BitchuteApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(title: 'Bitchute Browser', home: SearchScreen());
+  Widget build(BuildContext context) => MaterialApp(title: 'Bitchute', home: SearchScreen());
 }
 
 class SearchScreen extends StatefulWidget {
