@@ -30,5 +30,3 @@ flutter run
 ## Next steps
 - Add pagination, details page, and tests
 - Improve error handling and offline caching
-
-If you want, I can run a quick test of the API service or add unit tests next.
