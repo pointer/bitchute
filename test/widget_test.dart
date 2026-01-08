@@ -7,13 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bitchute_browser/services/api_service.dart';
 
 import 'package:bitchute_browser/main.dart';
 
 void main() {
   testWidgets('Search screen basic UI', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const BitchuteApp());
+    // Build our app with autoLoad disabled to check the empty state.
+    await tester.pumpWidget(MaterialApp(home: SearchScreen(api: ApiService(), autoLoad: false)));
 
     // Verify app bar title and search controls are present.
     expect(find.text('Bitchute Browser'), findsOneWidget);

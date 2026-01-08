@@ -15,7 +15,8 @@ class BitchuteApp extends StatelessWidget {
 
 class SearchScreen extends StatefulWidget {
   final ApiService api;
-  SearchScreen({Key? key, ApiService? api}) : api = api ?? ApiService(), super(key: key);
+  final bool autoLoad;
+  SearchScreen({Key? key, ApiService? api, this.autoLoad = true}) : api = api ?? ApiService(), super(key: key);
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -32,6 +33,29 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _api = widget.api;
+    if (widget.autoLoad) _loadHomeFeed();
+  }
+
+  void _loadHomeFeed() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+      _results = [];
+    });
+    try {
+      final res = await _api.homeFeed();
+      setState(() {
+        _results = res;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   void _doSearch() async {

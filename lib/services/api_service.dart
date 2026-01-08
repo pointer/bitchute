@@ -25,6 +25,12 @@ class ApiService {
       'sortdesc': 'false',
     });
 
+  /// Convenience helper to load a "home" or trending feed. It currently maps
+  /// to a search for a fixed query but exists so consumers can request the
+  /// home feed explicitly without needing to know the query.
+  Future<List<Video>> homeFeed({int limit = 50}) => search('trending', limit: limit);
+
+
     int attempt = 0;
 
     while (true) {
@@ -81,4 +87,10 @@ class ApiService {
       }
     }
   }
+
+  /// Convenience helper to load a "home" or trending feed. It currently maps
+  /// to a search for a fixed query but exists so consumers can request the
+  /// home feed explicitly without needing to know the query.
+  Future<List<Video>> homeFeed({int limit = 50}) => search('trending', limit: limit);
 }
+
