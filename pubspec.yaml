@@ -1,0 +1,24 @@
+name: bitchute_browser
+description: A minimal Flutter app inspired by Ruby to search Bitchute via the SMAT API.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=2.18.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.5
+  http: ^0.13.6
+  url_launcher: ^6.1.10
+  webview_flutter: ^4.0.7
+  cached_network_image: ^3.2.3
+  shimmer: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
