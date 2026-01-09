@@ -52,10 +52,12 @@ class ApiService {
       }
 
       if (resp.statusCode == 200) {
-        // Safer JSON parsing with clearer errors
+        // Safer JSON parsing with correct encoding handling. Use the raw
+        // response bytes and decode as UTF-8 before JSON parsing to avoid
+        // mojibake when the server returns UTF-8 content.
         final dynamic decoded;
         try {
-          decoded = jsonDecode(resp.body);
+          decoded = jsonDecode(utf8.decode(resp.bodyBytes));
         } catch (e) {
           throw Exception('Failed to parse response JSON: $e');
         }
