@@ -23,9 +23,8 @@ void main() {
       ),
     );
 
-    // Verify search controls are present.
-    expect(find.byType(TextField), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Search'), findsOneWidget);
+    // Verify search FAB and empty state are present.
+    expect(find.byType(FloatingActionButton), findsOneWidget);
 
     // With no results yet, the UI should show the empty state.
     expect(find.text('No results'), findsOneWidget);

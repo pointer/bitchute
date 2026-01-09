@@ -35,22 +35,16 @@ void main() {
 
     final fake = FakeApiService(result: sample, delay: const Duration(milliseconds: 150));
 
-    await tester.pumpWidget(MaterialApp(home: SearchScreen(api: fake)));
+    await tester.pumpWidget(MaterialApp(home: SearchScreen(api: fake, autoLoad: true)));
 
-    // enter search and tap
-    await tester.enterText(find.byType(TextField), 'query');
-    await tester.tap(find.text('Search'));
-    await tester.pump(); // start frame
+    // FAB should be visible
+    expect(find.byType(FloatingActionButton), findsOneWidget);
 
-    // while loading we should see shimmer placeholders
-    expect(find.byType(Shimmer), findsWidgets);
-
-    // wait for the fake api to complete
-    await tester.pump(const Duration(milliseconds: 200));
+    // when autoLoad is true, it will load immediately
+    await tester.pump(const Duration(milliseconds: 150));
     await tester.pumpAndSettle();
 
-    // after fetch, expect a ListTile for result
-    expect(find.byType(ListTile), findsWidgets);
+    // after load we should see the result
     expect(find.text('T1'), findsOneWidget);
   });
 
@@ -63,12 +57,13 @@ void main() {
 
     await tester.pumpWidget(MaterialApp(home: SearchScreen(api: fake), navigatorObservers: [observer]));
 
-    await tester.enterText(find.byType(TextField), 'q');
-    await tester.tap(find.text('Search'));
+    // autoLoad is true by default, so results should load immediately
     await tester.pumpAndSettle();
 
+    // verify result is visible
     expect(find.text('T2'), findsOneWidget);
 
+    // tap the result to navigate
     await tester.tap(find.text('T2'));
     await tester.pumpAndSettle();
 

@@ -228,16 +228,41 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _openSearchDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Search'),
+        content: TextField(
+          controller: _controller,
+          decoration: const InputDecoration(
+            hintText: 'Enter search query...',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _doSearch();
+            },
+            child: const Text('Search'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(children: [
-            Row(children: [
-              Expanded(child: TextField(controller: _controller, decoration: const InputDecoration(hintText: 'Search...'))),
-              const SizedBox(width: 8),
-              ElevatedButton(onPressed: _loading ? null : _doSearch, child: const Text('Search'))
-            ]),
             if (_loading) const LinearProgressIndicator(),
             if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text('Error: $_error', style: const TextStyle(color: Colors.red))),
             Expanded(
@@ -269,6 +294,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         ? const Center(child: Text('No results'))
                         : ListView.builder(itemCount: _results.length, itemBuilder: (context, i) => VideoTile(video: _results[i]))),
           ]),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _openSearchDialog,
+          tooltip: 'Search',
+          child: const Icon(Icons.search),
         ),
       );
 }
