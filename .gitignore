@@ -183,3 +183,4 @@ macos/Runner.xcodeproj/project.pbxproj
 .github/pull_request_template.md
 
 ios/Podfile
+APP_STORE_PREPARATION.md
