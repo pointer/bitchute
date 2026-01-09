@@ -16,6 +16,7 @@ class Video {
     if (src['thumbnail'] != null) thumb = src['thumbnail'] as String?;
     else if (src['thumbnail_url'] != null) thumb = src['thumbnail_url'] as String?;
     else if (src['poster'] != null) thumb = src['poster'] as String?;
+    else if (meta['image'] != null) thumb = meta['image'] as String?;
     else if (meta['thumbnail'] != null) thumb = meta['thumbnail'].toString();
 
     return Video(
