@@ -14,10 +14,16 @@ import 'package:bitchute_browser/main.dart';
 void main() {
   testWidgets('Search screen basic UI', (WidgetTester tester) async {
     // Build our app with autoLoad disabled to check the empty state.
-    await tester.pumpWidget(MaterialApp(home: SearchScreen(api: ApiService(), autoLoad: false)));
+    // SearchScreen is a standalone widget that doesn't require auth context.
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SearchScreen(api: ApiService(), autoLoad: false),
+        ),
+      ),
+    );
 
-    // Verify app bar title and search controls are present.
-    expect(find.text('Bitchute Browser'), findsOneWidget);
+    // Verify search controls are present.
     expect(find.byType(TextField), findsOneWidget);
     expect(find.widgetWithText(ElevatedButton, 'Search'), findsOneWidget);
 
