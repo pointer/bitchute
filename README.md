@@ -1,4 +1,4 @@
-# Bitchute Browser (Flutter)
+# Bitchute (Flutter)
 
 A small Flutter app scaffold inspired by the Ruby project in this repository — it uses the SMAT API endpoint that the Ruby script calls to search Bitchute videos and displays results.
 
@@ -30,3 +30,7 @@ flutter run
 ## Next steps
 - Add pagination, details page, and tests
 - Improve error handling and offline caching
+
+## Changelog
+- 2026-01-08 — Added an **auto-load home feed** feature: `SearchScreen` now accepts an `autoLoad` boolean (defaults to **true**) and will load a home/trending feed on startup. `ApiService` includes a `homeFeed()` helper that maps to a default search, and a widget test (`test/search_screen_autoload_test.dart`) verifies the auto-load behavior with a fake `ApiService`.
+

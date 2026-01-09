@@ -7,24 +7,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bitchute_browser/services/api_service.dart';
 
 import 'package:bitchute_browser/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Search screen basic UI', (WidgetTester tester) async {
+    // Build our app with autoLoad disabled to check the empty state.
+    await tester.pumpWidget(MaterialApp(home: SearchScreen(api: ApiService(), autoLoad: false)));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify app bar title and search controls are present.
+    expect(find.text('Bitchute Browser'), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Search'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // With no results yet, the UI should show the empty state.
+    expect(find.text('No results'), findsOneWidget);
   });
 }
