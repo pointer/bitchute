@@ -8,12 +8,10 @@ import 'services/auth_service.dart';
 import 'providers/auth_provider.dart';
 import 'widgets/video_tile.dart';
 import 'screens/sign_in_screen.dart';
-import 'screens/sign_up_screen.dart';
 import 'screens/subscriptions_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/video_upload_screen.dart';
-import 'localization/app_strings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

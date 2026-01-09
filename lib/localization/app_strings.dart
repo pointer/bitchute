@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class AppStrings {
   static const Map<String, Map<String, String>> translations = {
