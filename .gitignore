@@ -170,3 +170,12 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 /linux
 /macos
+build/6ab642d2d29d49c7c5f5a6d85fcef46b.cache.dill.track.dill
+build/6ab642d2d29d49c7c5f5a6d85fcef46b.cache.dill.track.dill
+build/test_cache/build/6ab642d2d29d49c7c5f5a6d85fcef46b.cache.dill.track.dill
+macos/Runner.xcodeproj/project.pbxproj
+macos/Runner.xcworkspace/contents.xcworkspacedata
+.gitignore
+.github/pull_request_template.md
+macos/Runner.xcworkspace/contents.xcworkspacedata
+macos/Runner.xcodeproj/project.pbxproj
