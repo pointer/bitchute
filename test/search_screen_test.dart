@@ -36,10 +36,9 @@ void main() {
 
     await tester.pumpWidget(MaterialApp(home: SearchScreen(api: fake, autoLoad: true)));
 
-    // FAB should be visible
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    // No FAB (search is inline on HomeScreen). When autoLoad is true, it will still load immediately.
+    expect(find.byType(FloatingActionButton), findsNothing);
 
-    // when autoLoad is true, it will load immediately
     await tester.pump(const Duration(milliseconds: 150));
     await tester.pumpAndSettle();
 

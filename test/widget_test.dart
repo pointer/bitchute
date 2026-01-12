@@ -23,8 +23,8 @@ void main() {
       ),
     );
 
-    // Verify search FAB and empty state are present.
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    // Verify there is no FAB in SearchScreen; search is inline on HomeScreen.
+    expect(find.byType(FloatingActionButton), findsNothing);
 
     // With no results yet, the UI should show the empty state.
     expect(find.text('No results'), findsOneWidget);

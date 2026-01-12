@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:provider/provider.dart';
 import '../models/video.dart';
 import '../screens/video_player_screen.dart';
+import '../services/history_service.dart';
 
 class VideoTile extends StatelessWidget {
   final Video video;
@@ -36,6 +38,15 @@ class VideoTile extends StatelessWidget {
       subtitle: Text('${video.author} • ${video.username}'),
       trailing: const Icon(Icons.open_in_new),
       onTap: () {
+        // Record in viewing history
+        try {
+          // HistoryService is provided at the app root; use read to avoid listening here
+          final history = context.read<HistoryService>();
+          history.add(video);
+        } catch (_) {
+          // ignore if provider not available in some test contexts
+        }
+
         Navigator.push(context, MaterialPageRoute(builder: (_) => VideoPlayerScreen(url: video.url, title: video.title)));
       },
     );

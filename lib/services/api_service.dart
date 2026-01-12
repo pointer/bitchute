@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/video.dart';
+import '../models/notification.dart';
 
 class ApiService {
   static const String base = 'https://api.smat-app.com/content';
@@ -24,11 +25,6 @@ class ApiService {
       'esquery': 'false',
       'sortdesc': 'false',
     });
-
-  /// Convenience helper to load a "home" or trending feed. It currently maps
-  /// to a search for a fixed query but exists so consumers can request the
-  /// home feed explicitly without needing to know the query.
-  Future<List<Video>> homeFeed({int limit = 50}) => search('trending', limit: limit);
 
 
     int attempt = 0;
@@ -88,6 +84,31 @@ class ApiService {
         throw Exception('Failed to fetch results: ${resp.statusCode}');
       }
     }
+  }
+
+  /// Fetch notifications list. Returns empty list on error.
+  Future<List<BitchuteNotification>> notifications() async {
+    final url = Uri.parse('https://api.smat-app.com/notifications');
+    try {
+      final resp = await client.get(url).timeout(timeout);
+      if (resp.statusCode == 200) {
+        final dynamic decoded = jsonDecode(utf8.decode(resp.bodyBytes));
+        final items = <BitchuteNotification>[];
+        if (decoded is List) {
+          for (final e in decoded) {
+            if (e is Map<String, dynamic>) items.add(BitchuteNotification.fromJson(e));
+          }
+        } else if (decoded is Map && decoded['notifications'] is List) {
+          for (final e in (decoded['notifications'] as List)) {
+            if (e is Map<String, dynamic>) items.add(BitchuteNotification.fromJson(e));
+          }
+        }
+        return items;
+      }
+    } catch (e) {
+      // ignore and return empty list
+    }
+    return [];
   }
 
   /// Convenience helper to load a "home" or trending feed. It currently maps

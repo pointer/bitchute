@@ -9,9 +9,10 @@ import 'providers/auth_provider.dart';
 import 'widgets/video_tile.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/subscriptions_screen.dart';
-import 'screens/profile_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/video_upload_screen.dart';
+import 'services/history_service.dart';
+import 'screens/history_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,7 @@ class BitchuteApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider(authService: AuthService())),
+        ChangeNotifierProvider<HistoryService>(create: (_) => HistoryService()),
       ],
       child: MaterialApp(
         title: 'Bitchute',
@@ -97,13 +99,100 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final ApiService _apiService = ApiService();
+  bool _searchActive = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
+  String _searchQuery = '';
+  int _unreadNotifications = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotificationCount();
+  }
+
+  Future<void> _loadNotificationCount() async {
+    try {
+      final notes = await _apiService.notifications();
+      if (!mounted) return;
+      setState(() {
+        _unreadNotifications = notes.where((n) => !n.isRead).length;
+      });
+    } catch (_) {
+      // ignore errors for now
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('Bitchute', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+        leading: _searchActive
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    _searchActive = false;
+                    _searchController.clear();
+                    _searchQuery = '';
+                  });
+                },
+              )
+            : null,
+        title: _searchActive
+            ? Row(children: [
+                Expanded(
+                  child: Container(
+                    height: 38,
+                    decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(18)),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          focusNode: _searchFocus,
+                          autofocus: true,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(hintText: 'Search', border: InputBorder.none, isDense: true, hintStyle: TextStyle(color: Colors.white70)),
+                          onChanged: (s) => setState(() {}),
+                          onSubmitted: (s) {
+                            setState(() {
+                              _searchQuery = s.trim();
+                              _selectedIndex = 0;
+                            });
+                          },
+                        ),
+                      ),
+                      if (_searchController.text.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: () => setState(() {
+                            _searchController.clear();
+                            _searchQuery = '';
+                          }),
+                        )
+                    ]),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () {
+                    setState(() {
+                      _searchQuery = _searchController.text.trim();
+                      _selectedIndex = 0;
+                    });
+                    _searchFocus.requestFocus();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                    child: const Icon(Icons.search, color: Colors.black),
+                  ),
+                ),
+              ])
+            : const Text('Bitchute', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.cast),
@@ -113,56 +202,60 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const NotificationsScreen()),
                   );
+                  // refresh count when returning
+                  _loadNotificationCount();
                 },
               ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)),
-                  child: const Text('9+', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              if (_unreadNotifications > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)),
+                    child: Text(
+                      _unreadNotifications > 99 ? '99+' : _unreadNotifications.toString(),
+                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => SearchScreen(api: _apiService, autoOpen: true)));
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
-                child: const Icon(Icons.search, color: Colors.black),
+          if (!_searchActive)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(24),
+                onTap: () => setState(() {
+                  _searchActive = true;
+                  // focus after rebuild
+                  WidgetsBinding.instance.addPostFrameCallback((_) => _searchFocus.requestFocus());
+                }),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                  child: const Icon(Icons.search, color: Colors.black),
+                ),
               ),
             ),
-          ),
         ],
       ),
       body: _getScreen(_selectedIndex),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const VideoUploadScreen()));
-        },
-        child: const Icon(Icons.add, size: 32),
-      ),
+
       bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6,
+        color: Colors.white,
+        elevation: 8,
         child: SizedBox(
-          height: 60,
+          height: 64,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Left side
               Row(
                 children: [
                   MaterialButton(
@@ -183,6 +276,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+
+              // Center + button (floating feel)
+              Transform.translate(
+                offset: const Offset(0, -18),
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedIndex = 2),
+                  child: Material(
+                    elevation: 4,
+                    shape: const CircleBorder(),
+                    color: Colors.white,
+                    child: const SizedBox(width: 56, height: 56, child: Icon(Icons.add, color: Colors.black, size: 28)),
+                  ),
+                ),
+              ),
+
+              // Right side
               Row(
                 children: [
                   MaterialButton(
@@ -213,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _getScreen(int index) {
     switch (index) {
       case 0:
-        return SearchScreen(api: _apiService, autoLoad: true);
+        return SearchScreen(api: _apiService, autoLoad: true, query: _searchQuery);
       case 1:
         return const Center(child: Text('Shorts'));
       case 2:
@@ -221,19 +330,26 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         return const SubscriptionsScreen();
       case 4:
-        return ProfileScreen(user: widget.user);
+        return HistoryScreen();
       default:
-        return SearchScreen(api: _apiService, autoLoad: true);
+        return SearchScreen(api: _apiService, autoLoad: true, query: _searchQuery);
     }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocus.dispose();
+    super.dispose();
   }
 }
 
 class SearchScreen extends StatefulWidget {
   final ApiService api;
   final bool autoLoad;
-  final bool autoOpen;
+  final String? query;
 
-  SearchScreen({Key? key, ApiService? api, this.autoLoad = true, this.autoOpen = false}) : api = api ?? ApiService(), super(key: key);
+  SearchScreen({Key? key, ApiService? api, this.autoLoad = true, this.query}) : api = api ?? ApiService(), super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -251,7 +367,23 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
     _api = widget.api;
     if (widget.autoLoad) _loadHomeFeed();
-    if (widget.autoOpen) WidgetsBinding.instance.addPostFrameCallback((_) => _openSearchDialog());
+    if (widget.query != null && widget.query!.isNotEmpty) {
+      _controller.text = widget.query!;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _doSearch());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.query != oldWidget.query) {
+      if (widget.query != null && widget.query!.isNotEmpty) {
+        _controller.text = widget.query!;
+        _doSearch();
+      } else {
+        _loadHomeFeed();
+      }
+    }
   }
 
   void _loadHomeFeed() async {
@@ -300,35 +432,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  void _openSearchDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Search'),
-        content: TextField(
-          controller: _controller,
-          decoration: const InputDecoration(
-            hintText: 'Enter search query...',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _doSearch();
-            },
-            child: const Text('Search'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -367,10 +471,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         : ListView.builder(itemCount: _results.length, itemBuilder: (context, i) => VideoTile(video: _results[i]))),
           ]),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _openSearchDialog,
-          tooltip: 'Search',
-          child: const Icon(Icons.search),
-        ),
       );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }
