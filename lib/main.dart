@@ -102,42 +102,110 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bitchute'),
+        backgroundColor: Colors.black,
+        title: const Text('Bitchute', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              );
-            },
+            icon: const Icon(Icons.cast),
+            onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ProfileScreen(user: widget.user)),
-              );
-            },
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                  );
+                },
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)),
+                  child: const Text('9+', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => SearchScreen(api: _apiService, autoOpen: true)));
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                child: const Icon(Icons.search, color: Colors.black),
+              ),
+            ),
           ),
         ],
       ),
       body: _getScreen(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const VideoUploadScreen()));
         },
-        items: [
-          BottomNavigationBarItem(icon: const Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: const Icon(Icons.subscriptions), label: 'Subscriptions'),
-          BottomNavigationBarItem(icon: const Icon(Icons.add_circle), label: 'Upload'),
-          BottomNavigationBarItem(icon: const Icon(Icons.person), label: 'You'),
-        ],
+        child: const Icon(Icons.add, size: 32),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  MaterialButton(
+                    minWidth: 60,
+                    onPressed: () => setState(() => _selectedIndex = 0),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.home, color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Colors.grey),
+                      Text('Home', style: TextStyle(color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                    ]),
+                  ),
+                  MaterialButton(
+                    minWidth: 60,
+                    onPressed: () => setState(() => _selectedIndex = 1),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.play_arrow, color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Colors.grey),
+                      Text('Shorts', style: TextStyle(color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                    ]),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  MaterialButton(
+                    minWidth: 60,
+                    onPressed: () => setState(() => _selectedIndex = 3),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.subscriptions, color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Colors.grey),
+                      Text('Subscriptions', style: TextStyle(color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                    ]),
+                  ),
+                  MaterialButton(
+                    minWidth: 60,
+                    onPressed: () => setState(() => _selectedIndex = 4),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.person, color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Colors.grey),
+                      Text('You', style: TextStyle(color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                    ]),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -147,10 +215,12 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return SearchScreen(api: _apiService, autoLoad: true);
       case 1:
-        return const SubscriptionsScreen();
+        return const Center(child: Text('Shorts'));
       case 2:
         return const VideoUploadScreen();
       case 3:
+        return const SubscriptionsScreen();
+      case 4:
         return ProfileScreen(user: widget.user);
       default:
         return SearchScreen(api: _apiService, autoLoad: true);
@@ -161,8 +231,9 @@ class _HomeScreenState extends State<HomeScreen> {
 class SearchScreen extends StatefulWidget {
   final ApiService api;
   final bool autoLoad;
+  final bool autoOpen;
 
-  SearchScreen({Key? key, ApiService? api, this.autoLoad = true}) : api = api ?? ApiService(), super(key: key);
+  SearchScreen({Key? key, ApiService? api, this.autoLoad = true, this.autoOpen = false}) : api = api ?? ApiService(), super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -180,6 +251,7 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
     _api = widget.api;
     if (widget.autoLoad) _loadHomeFeed();
+    if (widget.autoOpen) WidgetsBinding.instance.addPostFrameCallback((_) => _openSearchDialog());
   }
 
   void _loadHomeFeed() async {

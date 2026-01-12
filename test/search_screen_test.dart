@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bitchute_browser/main.dart';
 import 'package:bitchute_browser/models/video.dart';
 import 'package:bitchute_browser/services/api_service.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'package:http/http.dart' as http;
 
