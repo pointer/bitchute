@@ -31,7 +31,27 @@ class BitchuteApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Bitchute',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: false,
+        ).copyWith(
+          appBarTheme: AppBarTheme(
+            backgroundColor: ColorScheme.fromSeed(seedColor: Colors.blue).surface,
+            iconTheme: IconThemeData(color: ColorScheme.fromSeed(seedColor: Colors.blue).onSurface),
+            titleTextStyle: TextStyle(color: ColorScheme.fromSeed(seedColor: Colors.blue).secondary, fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
+          useMaterial3: false,
+        ).copyWith(
+          appBarTheme: AppBarTheme(
+            backgroundColor: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark).surface,
+            iconTheme: IconThemeData(color: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark).onSurface),
+            titleTextStyle: TextStyle(color: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark).secondary, fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+        ),
+        themeMode: ThemeMode.system,
         home: const AuthGate(),
       ),
     );
@@ -127,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
         leading: _searchActive
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -145,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Container(
                     height: 38,
-                    decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(18)),
+                    decoration: BoxDecoration(color: Theme.of(context).cardColor.withOpacity(0.08), borderRadius: BorderRadius.circular(18)),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Row(children: [
                       Expanded(
@@ -153,8 +172,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           controller: _searchController,
                           focusNode: _searchFocus,
                           autofocus: true,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(hintText: 'Search', border: InputBorder.none, isDense: true, hintStyle: TextStyle(color: Colors.white70)),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                          decoration: InputDecoration(hintText: 'Search', border: InputBorder.none, isDense: true, hintStyle: TextStyle(color: Theme.of(context).hintColor)),
                           onChanged: (s) => setState(() {}),
                           onSubmitted: (s) {
                             setState(() {
@@ -166,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       if (_searchController.text.isNotEmpty)
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
+                          icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
                           onPressed: () => setState(() {
                             _searchController.clear();
                             _searchQuery = '';
@@ -187,12 +206,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
-                    child: const Icon(Icons.search, color: Colors.black),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(24)),
+                    child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               ])
-            : const Text('Bitchute', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            : Text('Bitchute', style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.cast),
@@ -217,10 +236,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(12)),
                     child: Text(
                       _unreadNotifications > 99 ? '99+' : _unreadNotifications.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onError, fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -238,8 +257,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 }),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
-                  child: const Icon(Icons.search, color: Colors.black),
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(24)),
+                  child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
             ),
@@ -248,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _getScreen(_selectedIndex),
 
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 8,
         child: SizedBox(
           height: 64,
@@ -262,16 +281,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     minWidth: 60,
                     onPressed: () => setState(() => _selectedIndex = 0),
                     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Icon(Icons.home, color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Colors.grey),
-                      Text('Home', style: TextStyle(color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                      Icon(Icons.home, color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor),
+                      Text('Home', style: TextStyle(color: _selectedIndex == 0 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, fontSize: 12)), 
                     ]),
                   ),
                   MaterialButton(
                     minWidth: 60,
                     onPressed: () => setState(() => _selectedIndex = 1),
                     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Icon(Icons.play_arrow, color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Colors.grey),
-                      Text('Shorts', style: TextStyle(color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                      Icon(Icons.play_arrow, color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor),
+                      Text('Shorts', style: TextStyle(color: _selectedIndex == 1 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, fontSize: 12)), 
                     ]),
                   ),
                 ],
@@ -285,8 +304,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Material(
                     elevation: 4,
                     shape: const CircleBorder(),
-                    color: Colors.white,
-                    child: const SizedBox(width: 56, height: 56, child: Icon(Icons.add, color: Colors.black, size: 28)),
+                    color: Theme.of(context).colorScheme.surface,
+                    child: SizedBox(width: 56, height: 56, child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface, size: 28)),
                   ),
                 ),
               ),
@@ -298,16 +317,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     minWidth: 60,
                     onPressed: () => setState(() => _selectedIndex = 3),
                     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Icon(Icons.subscriptions, color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Colors.grey),
-                      Text('Subscriptions', style: TextStyle(color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                      Icon(Icons.subscriptions, color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor),
+                      Text('Subscriptions', style: TextStyle(color: _selectedIndex == 3 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, fontSize: 12)), 
                     ]),
                   ),
                   MaterialButton(
                     minWidth: 60,
                     onPressed: () => setState(() => _selectedIndex = 4),
                     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Icon(Icons.person, color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Colors.grey),
-                      Text('You', style: TextStyle(color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Colors.grey, fontSize: 12)),
+                      Icon(Icons.person, color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor),
+                      Text('You', style: TextStyle(color: _selectedIndex == 4 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, fontSize: 12)),
                     ]),
                   ),
                 ],
@@ -435,12 +454,14 @@ class _SearchScreenState extends State<SearchScreen> {
 
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(children: [
             if (_loading) const LinearProgressIndicator(),
-            if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text('Error: $_error', style: const TextStyle(color: Colors.red))),
+            if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text('Error: $_error', style: TextStyle(color: Theme.of(context).colorScheme.error))),
             Expanded(
                 child: _loading
                     ? ListView.separated(
@@ -452,16 +473,16 @@ class _SearchScreenState extends State<SearchScreen> {
                             ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(width: 72, height: 72, color: Colors.grey.shade300),
+                                  baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                                  highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                                  child: Container(width: 72, height: 72, color: isDark ? Colors.grey.shade800 : Colors.grey.shade300),
                                 )),
                             const SizedBox(width: 12),
                             Expanded(
                                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Shimmer.fromColors(baseColor: Colors.grey.shade300, highlightColor: Colors.grey.shade100, child: Container(width: double.infinity, height: 14, color: Colors.grey.shade300)),
+                              Shimmer.fromColors(baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300, highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100, child: Container(width: double.infinity, height: 14, color: isDark ? Colors.grey.shade800 : Colors.grey.shade300)),
                               const SizedBox(height: 8),
-                              Shimmer.fromColors(baseColor: Colors.grey.shade300, highlightColor: Colors.grey.shade100, child: Container(width: 120, height: 12, color: Colors.grey.shade300)),
+                              Shimmer.fromColors(baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300, highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100, child: Container(width: 120, height: 12, color: isDark ? Colors.grey.shade800 : Colors.grey.shade300)),
                             ])),
                           ]),
                         ),
@@ -472,6 +493,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ]),
         ),
       );
+  }
 
   @override
   void dispose() {
@@ -479,3 +501,4 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 }
+

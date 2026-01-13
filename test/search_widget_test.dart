@@ -14,6 +14,6 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
 
     // Basic smoke checks
-    expect(find.byType(ListView) | find.text('No results'), findsWidgets);
+    expect(tester.any(find.byType(ListView)) || tester.any(find.text('No results')), isTrue);
   }, timeout: const Timeout(Duration(seconds: 60)));
 }
