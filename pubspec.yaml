@@ -30,6 +30,7 @@ flutter_icons:
   android: true
   ios: true
   image_path: "assets/icons/bitchute.png"
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
