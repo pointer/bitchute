@@ -184,3 +184,5 @@ macos/Runner.xcodeproj/project.pbxproj
 
 ios/Podfile
 APP_STORE_PREPARATION.md
+.flutter-plugins-dependencies
+.gitignore
