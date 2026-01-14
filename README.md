@@ -12,10 +12,9 @@ A small Flutter app scaffold inspired by the Ruby project in this repository —
 
 ## Run locally
 1. Install Flutter (https://flutter.dev/docs/get-started/install) if you don't have it.
-2. From this folder run:
+2. From the repository root run:
 
 ```bash
-cd flutter_app
 flutter pub get
 flutter run
 ```
@@ -33,4 +32,15 @@ flutter run
 
 ## Changelog
 - 2026-01-08 — Added an **auto-load home feed** feature: `SearchScreen` now accepts an `autoLoad` boolean (defaults to **true**) and will load a home/trending feed on startup. `ApiService` includes a `homeFeed()` helper that maps to a default search, and a widget test (`test/search_screen_autoload_test.dart`) verifies the auto-load behavior with a fake `ApiService`.
+
+## Branch protection
+We recommend protecting the `main`/`master` branches and requiring CI checks before merging. To enable branch protection:
+
+1. Go to your repository on GitHub → **Settings** → **Branches** → **Add rule**.
+2. Use a branch name pattern (e.g., `main`) and enable **Require status checks to pass before merging**.
+3. Select `Flutter tests` and `Pre-merge checks` (if present) from the list of checks.
+4. Optionally enable **Require pull request reviews before merging** (e.g., 1 reviewer) and **Require branches to be up to date before merging**.
+5. Save changes.
+
+This ensures PRs cannot be merged unless CI passes and encourages reviewers to verify changes.
 
