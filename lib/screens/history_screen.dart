@@ -14,6 +14,81 @@ class HistoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('History'),
         actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              // Handle menu item selection
+              switch (value) {
+                case 'account':
+                  // TODO: Navigate to account settings
+                  break;
+                case 'privacy':
+                  // TODO: Navigate to privacy settings
+                  break;
+                case 'notifications':
+                  // TODO: Navigate to notification settings
+                  break;
+                case 'help':
+                  // TODO: Navigate to help
+                  break;
+                case 'about':
+                  // TODO: Show about dialog
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'account',
+                child: Row(
+                  children: [
+                    Icon(Icons.account_circle),
+                    SizedBox(width: 8),
+                    Text('Account'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'privacy',
+                child: Row(
+                  children: [
+                    Icon(Icons.privacy_tip),
+                    SizedBox(width: 8),
+                    Text('Privacy'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'notifications',
+                child: Row(
+                  children: [
+                    Icon(Icons.notifications),
+                    SizedBox(width: 8),
+                    Text('Notifications'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'help',
+                child: Row(
+                  children: [
+                    Icon(Icons.help),
+                    SizedBox(width: 8),
+                    Text('Help & Support'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'about',
+                child: Row(
+                  children: [
+                    Icon(Icons.info),
+                    SizedBox(width: 8),
+                    Text('About'),
+                  ],
+                ),
+              ),
+            ],
+            icon: const Icon(Icons.settings),
+          ),
           if (history.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_outline),
