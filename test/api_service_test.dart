@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:bitchute_browser/services/api_service.dart';
+import 'package:bitchute_app/services/api_service.dart';
 
 void main() {
   group('ApiService', () {

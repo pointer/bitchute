@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bitchute_browser/main.dart';
-import 'package:bitchute_browser/models/video.dart';
-import 'package:bitchute_browser/services/api_service.dart';
+import 'package:bitchute_app/main.dart';
+import 'package:bitchute_app/models/video.dart';
+import 'package:bitchute_app/services/api_service.dart';
 
 import 'package:http/http.dart' as http;
 

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bitchute_browser/services/api_service.dart';
+import 'package:bitchute_app/services/api_service.dart';
 
 void main() {
   test('ApiService.live search prints sample titles', () async {

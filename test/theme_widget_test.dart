@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bitchute_browser/main.dart' as app;
-import 'package:bitchute_browser/models/user.dart';
-import 'package:bitchute_browser/models/video.dart';
-import 'package:bitchute_browser/widgets/video_tile.dart';
+import 'package:bitchute_app/main.dart' as app;
+import 'package:bitchute_app/models/user.dart';
+import 'package:bitchute_app/models/video.dart';
+import 'package:bitchute_app/widgets/video_tile.dart';
 
 void main() {
   final sampleUser = User(

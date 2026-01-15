@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:bitchute_browser/services/history_service.dart';
-import 'package:bitchute_browser/models/video.dart';
-import 'package:bitchute_browser/screens/history_screen.dart';
+import 'package:bitchute_app/services/history_service.dart';
+import 'package:bitchute_app/models/video.dart';
+import 'package:bitchute_app/screens/history_screen.dart';
 
 void main() {
   testWidgets('HistoryScreen shows entries and allows clearing', (tester) async {

@@ -7,9 +7,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bitchute_browser/services/api_service.dart';
+import 'package:bitchute_app/services/api_service.dart';
 
-import 'package:bitchute_browser/main.dart';
+import 'package:bitchute_app/main.dart';
 
 void main() {
   testWidgets('Search screen basic UI', (WidgetTester tester) async {

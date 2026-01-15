@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bitchute_browser/models/video.dart';
+import 'package:bitchute_app/models/video.dart';
 
 void main() {
   test('parses thumbnail from various fields', () {

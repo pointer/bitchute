@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bitchute_browser/main.dart' as app;
+import 'package:bitchute_app/main.dart' as app;
 
 void main() {
   testWidgets('SearchScreen displays FAB and allows opening search dialog', (tester) async {
